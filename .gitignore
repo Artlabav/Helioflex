@@ -1,0 +1,33 @@
+# === Fichiers générés par Arduino / ESP32 ===
+*.elf
+*.hex
+*.bin
+*.eep
+*.map
+*.d
+*.o
+
+# === Fichiers temporaires de l'IDE ===
+*.log
+*.tmp
+*.bak
+
+# === Cache de compilation PlatformIO ===
+.pio/
+.build/
+
+# === Configs éditeurs ===
+.vscode/
+.idea/
+
+# === Systèmes d'exploitation ===
+.DS_Store          # macOS
+Thumbs.db          # Windows
+
+# === Archives / fichiers personnels ===
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+*.swp              # fichiers de swap (Vim)
