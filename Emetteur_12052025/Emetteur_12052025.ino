@@ -59,7 +59,7 @@ static void temp_sensor_value_update(void *arg) {
     float busVoltage = ina226.getBusVoltage(); // Tension de bus en volts
     float current = ina226.getCurrent();       // Courant en ampères
     float power = ina226.getPower();           // Puissance en watts
-    float envoi = 100000 * busVoltage +  10 * current;
+    float envoi = 1000000000 * busVoltage +  100 * current;
     zbTempSensor.setTemperature(envoi);
     delay(3000);
   }

@@ -49,9 +49,9 @@ struct tm timeinfo = {};  // Time structure for Time cluster
 
 /****************** Temperature sensor handling *******************/
 void recieveSensorTemp(float temperature) {
-  float current = ((int)temperature % 100000) / 10; 
+  float current = ((int)temperature % 100000000) / 100; 
   
-  float voltage = (int)(temperature - current*10) / 100000;
+  float voltage = (int)(temperature - current*100) / 1000000000;
 
     Serial.printf("Voltage %0.2f Current %0.2f\n", voltage, current);
   sensor_temp = temperature;
@@ -75,7 +75,7 @@ void setup() {
   zbThermostat.onConfigRecieve(recieveSensorConfig);
 
   //Optional: set Zigbee device name and model
-  zbThermostat.setManufacturerAndModel("Espressif", "ZigbeeThermostat");
+  zbThermostat.setManufacturerAndModel("Espressif", "Coordinateur");
 
   //Optional Time cluster configuration
   //example time January 13, 2025 13:30:30 CET
