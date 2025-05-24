@@ -1,32 +1,3 @@
-// Copyright 2024 Espressif Systems (Shanghai) PTE LTD
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-/**
- * @brief This example demonstrates simple Zigbee thermostat.
- *
- * The example demonstrates how to use Zigbee library to get data from temperature
- * sensor end device and act as an thermostat.
- * The temperature sensor is a Zigbee end device, which is controlled by a Zigbee coordinator (thermostat).
- *
- * Proper Zigbee mode must be selected in Tools->Zigbee mode
- * and also the correct partition scheme must be selected in Tools->Partition Scheme.
- *
- * Please check the README.md for instructions and more detailed description.
- *
- * Created by Jan Procházka (https://github.com/P-R-O-C-H-Y/)
- */
-
 #ifndef ZIGBEE_MODE_ZCZR
 #error "Zigbee coordinator mode is not selected in Tools->Zigbee mode"
 #endif
@@ -49,22 +20,6 @@ struct tm timeinfo = {};  // Time structure for Time cluster
 
 /****************** Temperature sensor handling *******************/
 void recieveSensorTemp(float temperature) { 
-  /*int ID = 0;
-   int temp = temperature*100 ;
-  if((temp & 0x8000) == 0x8000)
-  {
-    temp *=-1;
-    ID = 1;
-  }
- 
-  float voltage = (temp & 0x00ff)/10;
-  float current = ((temp & 0x7f00) >>8)/10;
-  
-
-    
-    Serial.printf("RawValue %f\n", temperature);
-    Serial.printf("ID %d\nVoltage %0.2f\nCurrent %0.2f\n", ID, voltage, current);
-  sensor_temp = temperature;*/
   uint8_t raw = (uint8_t)temperature;
   bool isCurrent = raw & 0x80;
   float value = (raw & 0x7F) * 0.5;  // Décodage avec résolution 0.5
@@ -146,12 +101,4 @@ void loop() {
     // Set reporting interval for temperature sensor
     zbThermostat.setTemperatureReporting(0, 10, 2);
   }
-/*
-  // Print temperature sensor data each 10 seconds
-  static uint32_t last_print = 0;
-  if (millis() - last_print > 10000) {
-    last_print = millis();
-    int temp_percent = (int)((sensor_temp - sensor_min_temp) / (sensor_max_temp - sensor_min_temp) * 100);
-    Serial.printf("Loop temperature info: %.2f°C (%d %%)\n", sensor_temp, temp_percent);
-  }*/
 }
