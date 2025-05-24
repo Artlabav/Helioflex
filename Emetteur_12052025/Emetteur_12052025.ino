@@ -49,19 +49,36 @@ int32_t timezone;
 ZigbeeTempSensor zbTempSensor = ZigbeeTempSensor(TEMP_SENSOR_ENDPOINT_NUMBER);
 
 /************************ Temp sensor *****************************/
+uint8_t encodeValue(bool isCurrent, float value) {
+  uint8_t data = (uint8_t)(value / 0.5);  // résolution 0.5 → max 127
+  if (data > 127) data = 127;
+  return (isCurrent << 7) | (data & 0x7F);
+}
+
 static void temp_sensor_value_update(void *arg) {
   for (;;) {
-    /*
-    // Read temperature sensor value
-    float tsens_value = temperatureRead();
-    Serial.printf("Updated temperature sensor value to %.2f°C\r\n", tsens_value);
-    */
-    float busVoltage = ina226.getBusVoltage(); // Tension de bus en volts
-    float current = ina226.getCurrent();       // Courant en ampères
-    float power = ina226.getPower();           // Puissance en watts
-    float envoi = 1000000000 * busVoltage +  100 * current;
+ /*
+    int ID = 0;
+    //int busVoltage = (int)(10 * ina226.getBusVoltage()); // Tension de bus en volts
+   // int current = (int)(10 * ina226.getCurrent());       // Courant en ampères
+    int busVoltage = 0;
+    int current = 1;
+    //float envoi = (busVoltage |   current<<7 | ID<<15)/100 ;
+    float envoi= 255;
+    printf("Envoi : %f\n", envoi);
     zbTempSensor.setTemperature(envoi);
     delay(3000);
+*/
+    float busVoltage = ina226.getBusVoltage(); // Tension de bus en volts
+    uint8_t encodedVoltage = encodeValue(false, busVoltage); // ID 0 → tension
+    zbTempSensor.setTemperature((float)encodedVoltage);
+    printf("Send voltage: %.2f V (raw=%d)\n", busVoltage, encodedVoltage);
+    delay(5000);
+    float current = ina226.getCurrent();
+    uint8_t encodedCurrent = encodeValue(true, current); // ID 1 → courant
+    zbTempSensor.setTemperature((float)encodedCurrent);
+    printf("Send current: %.2f A (raw=%d)\n", current, encodedCurrent);
+    delay(5000);
   }
 }
 
@@ -117,10 +134,10 @@ void setup() {
   zbTempSensor.setManufacturerAndModel("Espressif", "ZigbeeTempSensor");
 
   // Set minimum and maximum temperature measurement value (10-50°C is default range for chip temperature measurement)
-  zbTempSensor.setMinMaxValue(0, 50);
+  zbTempSensor.setMinMaxValue(0, 255);
 
   // Optional: Set tolerance for temperature measurement in °C (lowest possible value is 0.01°C)
-  zbTempSensor.setTolerance(1);
+  zbTempSensor.setTolerance(0.01);
 
   // Optional: Time cluster configuration (default params, as this device will revieve time from coordinator)
   zbTempSensor.addTimeCluster();
@@ -172,7 +189,7 @@ void loop() {
   float busVoltage = ina226.getBusVoltage(); // Tension de bus en volts
   float current = ina226.getCurrent();       // Courant en ampères
   float power = ina226.getPower();           // Puissance en watts
-  zbTempSensor.setTemperature(busVoltage);
+  //zbTempSensor.setTemperature(busVoltage);
   // Affichage des mesures
   Serial.print("Tension de bus : ");
   Serial.print(busVoltage);

@@ -41,20 +41,39 @@ ZigbeeThermostat zbThermostat = ZigbeeThermostat(THERMOSTAT_ENDPOINT_NUMBER);
 
 // Save temperature sensor data
 float sensor_temp;
-float sensor_max_temp;
+float sensor_max_temp ;
 float sensor_min_temp;
 float sensor_tolerance;
 
 struct tm timeinfo = {};  // Time structure for Time cluster
 
 /****************** Temperature sensor handling *******************/
-void recieveSensorTemp(float temperature) {
-  float current = ((int)temperature % 100000000) / 100; 
+void recieveSensorTemp(float temperature) { 
+  /*int ID = 0;
+   int temp = temperature*100 ;
+  if((temp & 0x8000) == 0x8000)
+  {
+    temp *=-1;
+    ID = 1;
+  }
+ 
+  float voltage = (temp & 0x00ff)/10;
+  float current = ((temp & 0x7f00) >>8)/10;
   
-  float voltage = (int)(temperature - current*100) / 1000000000;
 
-    Serial.printf("Voltage %0.2f Current %0.2f\n", voltage, current);
-  sensor_temp = temperature;
+    
+    Serial.printf("RawValue %f\n", temperature);
+    Serial.printf("ID %d\nVoltage %0.2f\nCurrent %0.2f\n", ID, voltage, current);
+  sensor_temp = temperature;*/
+  uint8_t raw = (uint8_t)temperature;
+  bool isCurrent = raw & 0x80;
+  float value = (raw & 0x7F) * 0.5;  // Décodage avec résolution 0.5
+
+  if (isCurrent) {
+    Serial.printf("Received current: %.1f A\n", value);
+  } else {
+    Serial.printf("Received voltage: %.1f V\n", value);
+  }
 }
 
 void recieveSensorConfig(float min_temp, float max_temp, float tolerance) {
@@ -127,12 +146,12 @@ void loop() {
     // Set reporting interval for temperature sensor
     zbThermostat.setTemperatureReporting(0, 10, 2);
   }
-
+/*
   // Print temperature sensor data each 10 seconds
   static uint32_t last_print = 0;
   if (millis() - last_print > 10000) {
     last_print = millis();
     int temp_percent = (int)((sensor_temp - sensor_min_temp) / (sensor_max_temp - sensor_min_temp) * 100);
     Serial.printf("Loop temperature info: %.2f°C (%d %%)\n", sensor_temp, temp_percent);
-  }
+  }*/
 }
