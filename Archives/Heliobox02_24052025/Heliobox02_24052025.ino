@@ -33,12 +33,12 @@ static void temp_sensor_value_update(void *arg) {
     uint8_t encodedVoltage = encodeValue(false, busVoltage); // ID 0 → tension
     zbTempSensor.setTemperature((float)encodedVoltage);
     printf("Send voltage: %.2f V (raw=%d)\n", busVoltage, encodedVoltage);
-    delay(5000);
+    delay(20000);
     float current = ina226.getCurrent();
     uint8_t encodedCurrent = encodeValue(true, current); // ID 1 → courant
     zbTempSensor.setTemperature((float)encodedCurrent);
     printf("Send current: %.2f A (raw=%d)\n", current, encodedCurrent);
-    delay(5000);
+    delay(20000);
   }
 }
 /********************* Arduino functions **************************/

@@ -18,9 +18,9 @@ float sensor_tolerance;
 
 struct tm timeinfo = {};  // Time structure for Time cluster
 
-/****************** Temperature sensor handling *******************/
-void recieveSensorTemp(float temperature) { 
-  uint8_t raw = (uint8_t)temperature;
+/****************** Tension/Current sensor handling *******************/
+void recieveSensorTemp(float measure) { 
+  uint8_t raw = (uint8_t)measure;
   bool isCurrent = raw & 0x80;
   float value = (raw & 0x7F) * 0.5;  // Décodage avec résolution 0.5
 
@@ -32,7 +32,7 @@ void recieveSensorTemp(float temperature) {
 }
 
 void recieveSensorConfig(float min_temp, float max_temp, float tolerance) {
-  Serial.printf("Temperature sensor settings: min %.2f°C, max %.2f°C, tolerance %.2f°C\n", min_temp, max_temp, tolerance);
+  Serial.printf("Solar sunshade voltage settings: min %.2fV, max %.2fV, tolerance %.2fV\n", min_temp, max_temp, tolerance);
   sensor_min_temp = min_temp;
   sensor_max_temp = max_temp;
   sensor_tolerance = tolerance;
@@ -49,7 +49,7 @@ void setup() {
   zbThermostat.onConfigRecieve(recieveSensorConfig);
 
   //Optional: set Zigbee device name and model
-  zbThermostat.setManufacturerAndModel("Espressif", "Coordinateur");
+  zbThermostat.setManufacturerAndModel("Helioflex", "Coordinator");
 
   //Optional Time cluster configuration
   //example time January 13, 2025 13:30:30 CET
@@ -77,7 +77,7 @@ void setup() {
     ESP.restart();
   }
 
-  Serial.println("Waiting for Temperature sensor to bound to the thermostat");
+  Serial.println("Waiting for solar sunshades to bound to the coordinator");
   while (!zbThermostat.bound()) {
     Serial.printf(".");
     delay(500);
